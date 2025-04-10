@@ -2,26 +2,21 @@ import { useMutation } from '@tanstack/react-query'
 import { articleAPI } from '../../api/article-api'
 import { useNavigate } from 'react-router'
 import { routes } from '../../routes'
-import { z } from 'zod'
+
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-
-const createFormSchema = z.object({
-	title: z
-		.string()
-		.min(1, 'Название обязательно')
-		.max(100, 'Слишком длинное название'),
-})
-
-type CreateFormValues = z.infer<typeof createFormSchema>
+import { FormProvider, useForm } from 'react-hook-form'
+import { TypeFiled } from './fields/type-field'
+import { createFormSchema, CreateFormValues } from './form-schema'
 
 export const CreateArticle = () => {
-	const { register, handleSubmit } = useForm<CreateFormValues>({
+	const form = useForm<CreateFormValues>({
 		resolver: zodResolver(createFormSchema),
 		defaultValues: {
 			title: '',
 		},
 	})
+
+	const { register, handleSubmit, control } = form
 
 	const navigate = useNavigate()
 
@@ -39,19 +34,26 @@ export const CreateArticle = () => {
 		navigate(routes.articles.getLink())
 	})
 
+	console.log('RENDER FORM');
+
 	return (
 		<div>
 			<h1>Создать статью</h1>
-			<form onSubmit={submitHandler}>
-				<input type="text" {...register('title')} />
-				<button
-					type="submit"
-					disabled={status === 'pending'}
-					style={{ marginTop: '8px' }}
-				>
-					{status === 'pending' ? 'Создание' : 'Создать'}
-				</button>
-			</form>
+			<FormProvider {...form}>
+				<form onSubmit={submitHandler}>
+					<input type="text" {...register('title')} />
+
+					<TypeFiled control={control} />
+
+					<button
+						type="submit"
+						disabled={status === 'pending'}
+						style={{ marginTop: '8px' }}
+					>
+						{status === 'pending' ? 'Создание' : 'Создать'}
+					</button>
+				</form>
+			</FormProvider>
 		</div>
 	)
 }

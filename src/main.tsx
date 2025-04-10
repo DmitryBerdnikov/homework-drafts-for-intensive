@@ -6,6 +6,7 @@ import { CreateArticle } from './views/create-article'
 import { routes } from './routes'
 import { MainLayout } from './main-layout'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Example } from './example/example'
 import './index.css'
 
 const queryClient = new QueryClient()
@@ -15,8 +16,8 @@ createRoot(document.getElementById('root')!).render(
 		<QueryClientProvider client={queryClient}>
 			<BrowserRouter>
 				<Routes>
+					<Route path="/" element={<Example />} />
 					<Route element={<MainLayout />}>
-						<Route path="/" element={<div>Главная</div>} />
 						<Route
 							path={routes.articles.pathname}
 							element={<Articles />}
